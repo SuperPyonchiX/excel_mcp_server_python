@@ -1,0 +1,10 @@
+# MCP Server dependencies
+mcp>=1.0.0
+fastmcp>=2.11.0
+
+# Excel manipulation
+openpyxl>=3.1.0
+pandas>=2.0.0
+
+# Additional utilities
+pathlib2>=2.3.0
