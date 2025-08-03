@@ -20,10 +20,6 @@ from mcp.server.fastmcp import FastMCP
 # FastMCPサーバーインスタンスを作成
 mcp = FastMCP("Excel MCP Server")
 
-# ワークブックキャッシュ
-workbook_cache = {}
-open_workbook_paths = set()
-
 
 def validate_file_path(filePath: str) -> None:
     """ファイルパスの妥当性を検証"""
@@ -79,34 +75,6 @@ def create_workbook(filePath: str) -> str:
         return f"Excelワークブック '{filePath}' を作成しました。"
     except Exception as e:
         raise Exception(f"ワークブック作成エラー: {e}")
-
-
-@mcp.tool()
-def open_workbook(filePath: str) -> str:
-    """
-    既存のExcelワークブックを開いて情報を表示します
-    
-    Args:
-        filePath: 開くExcelファイルの絶対パス。既存のファイルである必要があります
-    """
-    try:
-        validate_file_path(filePath)
-        
-        if not os.path.exists(filePath):
-            raise FileNotFoundError(f"ファイルが見つかりません: {filePath}")
-        
-        workbook = openpyxl.load_workbook(filePath)
-        
-        # キャッシュに保存
-        workbook_cache[filePath] = workbook
-        open_workbook_paths.add(filePath)
-        
-        sheet_names = get_sheet_names(workbook)
-        sheet_count = len(workbook.sheetnames)
-        
-        return f"Excelワークブック '{filePath}' を開きました。\nワークシート数: {sheet_count}\nシート名: {sheet_names}"
-    except Exception as e:
-        raise Exception(f"ワークブック読み込みエラー: {e}")
 
 
 @mcp.tool()
@@ -474,49 +442,6 @@ def export_to_csv(filePath: str, sheetName: str, csvPath: str) -> str:
         return f"ワークシート '{sheetName}' をCSVファイル '{csvPath}' にエクスポートしました。"
     except Exception as e:
         raise Exception(f"CSV出力エラー: {e}")
-
-
-@mcp.tool()
-def close_workbook(filePath: str) -> str:
-    """
-    開いているExcelワークブックを閉じてメモリから解放します
-    
-    Args:
-        filePath: 閉じるExcelファイルの絶対パス。現在開いているファイルのパスを指定してください
-    """
-    try:
-        validate_file_path(filePath)
-        
-        was_open = filePath in open_workbook_paths
-        if was_open:
-            if filePath in workbook_cache:
-                del workbook_cache[filePath]
-            open_workbook_paths.discard(filePath)
-            return f"Excelワークブック '{filePath}' を閉じました。メモリから解放されました。"
-        else:
-            return f"Excelワークブック '{filePath}' は開かれていませんでした。"
-    except Exception as e:
-        raise Exception(f"ワークブック終了エラー: {e}")
-
-
-@mcp.tool()
-def list_open_workbooks() -> str:
-    """
-    現在開いているExcelワークブックの一覧を表示します
-    """
-    try:
-        if len(open_workbook_paths) == 0:
-            return "現在開いているワークブックはありません。"
-        
-        open_list = list(open_workbook_paths)
-        info = {
-            "開いているワークブック数": len(open_list),
-            "ファイル一覧": open_list
-        }
-        
-        return f"開いているワークブック:\n{json.dumps(info, ensure_ascii=False, indent=2)}"
-    except Exception as e:
-        raise Exception(f"開いているワークブック一覧取得エラー: {e}")
 
 
 if __name__ == "__main__":

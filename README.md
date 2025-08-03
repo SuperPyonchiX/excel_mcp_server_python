@@ -8,11 +8,8 @@ AIエージェントがExcelを自由に操作できるModel Context Protocol (M
 
 ### ワークブック・ワークシート操作
 - `create_workbook` - 新しいExcelワークブックを作成
-- `open_workbook` - 既存のExcelワークブックを開く
 - `get_workbook_info` - ワークブックの詳細情報を取得
 - `add_worksheet` - ワークシートを追加
-- `close_workbook` - ワークブックを閉じる
-- `list_open_workbooks` - 開いているワークブック一覧を表示
 
 ### セル・範囲操作
 - `set_cell_value` - セルに値を設定
@@ -106,10 +103,6 @@ python scripts/server_manager.py test
 FastMCPを使用して作成されたサーバーは、標準的なMCPクライアントから呼び出せます：
 
 ```python
-# サーバーを起動
-python src/index.py
-
-# 別のターミナルでクライアントから呼び出し
 # 新しいワークブックを作成
 {
   "tool": "create_workbook",

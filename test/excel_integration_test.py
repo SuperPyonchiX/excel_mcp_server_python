@@ -18,9 +18,9 @@ sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 # FastMCPベースのツール関数をインポート
 from index import (
-    create_workbook, open_workbook, add_worksheet, set_cell_value, 
+    create_workbook, add_worksheet, set_cell_value, 
     get_cell_value, set_range_values, get_range_values, format_cell,
-    add_formula, find_data, export_to_csv, close_workbook
+    add_formula, find_data, export_to_csv, get_workbook_info
 )
 
 # テスト設定
