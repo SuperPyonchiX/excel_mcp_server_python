@@ -31,71 +31,87 @@ AIエージェントがExcelを自由に操作できるModel Context Protocol (M
 
 ## 必要条件
 
-- Python 3.8以上
-- pip (Pythonパッケージマネージャー)
+- Python 3.10以上
+- uv (推奨) または pip
 
 ## クイックスタート
 
-### Windows環境
+### uv使用（推奨）
 
-1. **依存関係をインストール**:
+1. **uvのインストール** (まだの場合):
    ```bash
-   pip install -r requirements.txt
+   pip install uv
    ```
 
-2. **サーバーを起動**:
+2. **開発環境のセットアップ**:
    ```bash
-   python src/index.py
+   uv sync --dev
    ```
    
-   または、バッチファイルを使用:
+   または、バッチファイルを使用（Windows）:
+   ```bash
+   setup-dev.bat
+   ```
+
+3. **サーバーを起動**:
+   ```bash
+   uv run excel-mcp-server
+   ```
+   
+   または、バッチファイルを使用（Windows）:
    ```bash
    start-server.bat
    ```
 
-3. **テストを実行**:
+4. **テストを実行**:
    ```bash
-   python scripts/server_manager.py test
+   uv run python -m pytest
    ```
+
+### 従来のpip使用
+
+1. **仮想環境の作成と依存関係をインストール**:
+   ```bash
+   python -m venv venv
+   # Windows
+   venv\Scripts\activate
+   # Linux/Mac
+   source venv/bin/activate
    
-   または、バッチファイルを使用:
-   ```bash
-   run-tests.bat
-   ```
-
-### Linux/Mac環境
-
-1. **依存関係をインストール**:
-   ```bash
    pip install -r requirements.txt
    ```
 
 2. **サーバーを起動**:
    ```bash
-   python src/index.py
+   python src/excel_mcp_server/index.py
    ```
 
-3. **テストを実行**:
-   ```bash
-   python scripts/server_manager.py test
-   ```
-
-## 管理コマンド
-
-サーバー管理スクリプトを使用できます：
+## 開発コマンド（uv使用）
 
 ```bash
-# サーバー起動  
-python scripts/server_manager.py start
+# 仮想環境に入る
+uv shell
 
-# 状態確認
-python scripts/server_manager.py status
-
-# 依存関係インストール
-python scripts/server_manager.py install
+# サーバー起動
+uv run excel-mcp-server
 
 # テスト実行
-python scripts/server_manager.py test
+uv run python -m pytest
+
+# コードフォーマット
+uv run black src/
+
+# リンター実行
+uv run ruff src/
+
+# 型チェック
+uv run mypy src/
+
+# 開発用依存関係を含む同期
+uv sync --dev
+
+# プロダクション用のみ同期
+uv sync
 ```
 
 ### MCPクライアントからの使用
@@ -195,20 +211,39 @@ mypy src/
 ```
 excel_mcp_server_python/
 ├── src/
-│   └── index.py          # メインサーバー実装
-├── test/                 # テストファイル
-├── scripts/              # ユーティリティスクリプト
-├── requirements.txt      # 依存関係
-├── pyproject.toml       # プロジェクト設定
-└── README.md            # このファイル
+│   ├── excel_mcp_server/    # メインパッケージ
+│   │   ├── __init__.py      # パッケージ初期化
+│   │   └── main.py          # メインサーバー実装
+│   └── main.py              # 従来形式の実行ファイル（互換性用）
+├── test/                    # テストファイル
+│   ├── test_uv_setup.py     # uvセットアップテスト
+│   ├── excel_integration_test.py  # Excel統合テスト
+│   ├── test_tools_list.py   # ツールリストテスト
+│   └── output/              # テスト出力ファイル
+├── scripts/                 # ユーティリティスクリプト
+├── pyproject.toml          # プロジェクト設定（uv対応）
+├── uv.lock                 # uvロックファイル
+├── requirements.txt        # 従来の依存関係
+├── setup-dev.bat          # 開発環境セットアップ（Windows）
+├── start-server.bat       # サーバー起動（Windows）
+└── README.md              # このファイル
 ```
+
+## uv（推奨）の利点
+
+- **高速**: Rustで書かれたパッケージマネージャーで非常に高速
+- **信頼性**: ロックファイルによる確実な依存関係管理
+- **シンプル**: プロジェクト管理が簡潔
+- **互換性**: pipと互換性を保ちながら、より良いユーザー体験
 
 ## 技術仕様
 
-- **言語**: Python 3.8+
+- **言語**: Python 3.10+
+- **パッケージマネージャー**: uv（推奨）またはpip
 - **MCPフレームワーク**: FastMCP
 - **Excelライブラリ**: openpyxl
 - **データ処理**: pandas
+- **開発ツール**: pytest, black, ruff, mypy
 
 ## TypeScript版との違い
 

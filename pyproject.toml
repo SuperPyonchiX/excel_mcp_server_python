@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "excel-mcp-server-python"
@@ -11,21 +11,22 @@ authors = [
 ]
 license = {text = "ISC"}
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: ISC License (ISCL)",
     "Operating System :: OS Independent",
 ]
 keywords = ["mcp", "excel", "automation", "spreadsheet"]
 dependencies = [
     "mcp>=1.0.0",
+    "fastmcp>=2.11.0",
     "openpyxl>=3.1.0",
     "pandas>=2.0.0",
+    "pathlib2>=2.3.0",
 ]
 
 [project.optional-dependencies]
@@ -35,26 +36,63 @@ dev = [
     "black>=23.0.0",
     "flake8>=6.0.0",
     "mypy>=1.0.0",
+    "ruff>=0.1.0",
 ]
 
 [project.scripts]
-excel-mcp-server = "src.index:main"
+excel-mcp-server = "excel_mcp_server.main:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/excel-mcp-server-python"
-Repository = "https://github.com/yourusername/excel-mcp-server-python"
-Issues = "https://github.com/yourusername/excel-mcp-server-python/issues"
+Homepage = "https://github.com/SuperPyonchiX/excel-mcp-server-python"
+Repository = "https://github.com/SuperPyonchiX/excel-mcp-server-python"
+Issues = "https://github.com/SuperPyonchiX/excel-mcp-server-python/issues"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["src*"]
+# uv設定
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/excel_mcp_server"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "README.md",
+    "LICENSE",
+]
 
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39', 'py310', 'py311']
+target-version = ['py310', 'py311', 'py312']
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "B904",  # Within an except clause, raise exceptions with raise ... from err
+]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
